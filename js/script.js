@@ -1,6 +1,4 @@
     var map;
-	//var lat;
-	//var lon;
 	var cityStr;
 
 function loadData() {
@@ -25,23 +23,11 @@ function loadData() {
    // load a streetview of the choosen city from google maps streetview api
 	//var streetView= 'https://maps.googleapis.com/maps/api/streetview?size=600x400&location=' + address + '';
 	//$body.append('<img class="bgimg" src="' + streetView + '" >');
-	
-   //load a mapview of the chossen city from google maps api
-  /* function initialize() {
-	         //lat = placeData.geometry.cityStr.lat();  
-             //lon = placeData.geometry.cityStr.lng();  
-	var mapOptions= {
-	   zoom:8,
-	   center: new google.maps.LatLng(-34.397, 150.644)
-	};
-	map= new google.maps.Map(document.getElementById('mapDiv'), mapOptions);
-	   
-   }*/
-	
+		
 	
  var nyTimesUrl= 'http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' +cityStr+ '&sort=newest&api-key=f0331a394e4a5cd0ad8270cfcf7332a7:14:70756973';
  
-var wikipediaUrl='http://en.wikipedia.org/w/api.php?action=opensearch&search=' +cityStr+ '&format=json&callback=wikiCallback';
+ var wikipediaUrl='http://en.wikipedia.org/w/api.php?action=opensearch&search=' +cityStr+ '&format=json&callback=wikiCallback';
  //var wikipediaUrl='http://en.wikipedia.org/w/api.php?action=opensearch&search=' +cityStr+ '&format=json&callback=wikiCallback';
  	 
   
@@ -107,7 +93,7 @@ function initialize() {
 	   
    };
 
-//google.maps.event.addDomListener(window, 'load', initialize);
+
 $('#form-container').submit(loadData);///It's (loadData) and not, because it's a parameter
                                      // that we have to pass to prevent the default "submit form" behaviour
 $('#form-container').submit(initialize);
