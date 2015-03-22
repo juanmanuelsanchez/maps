@@ -145,8 +145,7 @@
            map= new google.maps.Map(document.getElementById('mapDiv'), mapOptions);
 
   
-        //var address= octopus.getCurrentCity().toString();
-        var address= $('#city').val();
+        var address= octopus.getCurrentCity();
         var geocoder= new google.maps.Geocoder();
         geocoder.geocode({'address':address}, function(results, status) {
 
