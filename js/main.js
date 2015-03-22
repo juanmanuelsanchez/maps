@@ -82,17 +82,19 @@
     		var $greeting= $('#greeting');
     		    $wikiElem.text("");
             $nytElem.text("");
-        
+        this.shopStr= $('#shop').val();
     		this.streetStr= $('#street').val();
 	      this.cityStr= $('#city').val();
 	      this.address= this.streetStr + ',' + this.cityStr;
+        this.location= this.shopStr + ',' + this.address;
         $greeting.text("So you want to live at " + this.address + " ? ");
         console.log(this.address);
+        console.log(this.location);
 
         octopus.setCurrentStreet(this.streetStr);
         octopus.setCurrentCity(this.cityStr);
         octopus.setCurrentAddress(this.address);
-        octopus.setCurrentLocations(this.address);
+        octopus.setCurrentLocations(this.location);
 
 
 

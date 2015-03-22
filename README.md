@@ -1,1 +1,1 @@
-Exploration with google maps and Ajax
+Exploration with google maps and Ajax to set places on the map
