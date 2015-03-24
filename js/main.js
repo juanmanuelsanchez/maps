@@ -249,8 +249,16 @@
 
 
       function callback(results, status) {
+        var i=0;
+        var length= results.length;
        if (status == google.maps.places.PlacesServiceStatus.OK) {
        createMapMarker(results[0])
+       //for(i; i<length; i++ ) {
+         
+         //createMapMarker(results[i]);
+
+       //}
+
         }
       }
 
