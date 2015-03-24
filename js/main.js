@@ -79,9 +79,11 @@
     		var $wikiElem= $('#wikipedia-links');
     		var $nytHeaderElem= $('#nytimes-header');
     		var $nytElem= $('#nytimes-articles');
+        var $foursquareElem= $('#foursquare-places');
     		var $greeting= $('#greeting');
     		    $wikiElem.text("");
             $nytElem.text("");
+            $foursquareElem.text("");
         this.shopStr= $('#shop').val();
     		this.streetStr= $('#street').val();
 	      this.cityStr= $('#city').val();
@@ -97,12 +99,18 @@
         octopus.setCurrentLocations(this.location);
 
 
-
-        var nyTimesUrl= 'http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' +this.cityStr+ '&sort=newest&api-key=f0331a394e4a5cd0ad8270cfcf7332a7:14:70756973';
+        var clientID='WMGXUPU15HUVPMTMGK3WZPHVGBXKPXWMUQ5WW3DMRSOZUIH5';
+        var clientSecret='RFUOHDP441JSHFBS1AS0KLAGRVVRGNL2VACN0RHIJJNC5AT2';
+        var nyTimesUrl='http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' +this.cityStr+ '&sort=newest&api-key=f0331a394e4a5cd0ad8270cfcf7332a7:14:70756973';
  
         var wikipediaUrl='http://en.wikipedia.org/w/api.php?action=opensearch&search=' +this.cityStr+ '&format=json&callback=wikiCallback';
-             
-
+        //var foursquareUrl='https://api.foursquare.com/v2/venues/explore?ll=40.7,-74&&client_id=' + clientID+ '&client_secret=' + clientSecret + '&v=20130815&query=sushi';
+        //var foursquareUrl='https://api.foursquare.com/v2/venues/explore?ll=40.7,-74&&client_id=WMGXUPU15HUVPMTMGK3WZPHVGBXKPXWMUQ5WW3DMRSOZUIH5&client_secret=RFUOHDP441JSHFBS1AS0KLAGRVVRGNL2VACN0RHIJJNC5AT2&v=20130815&query=sushi';
+        var foursquareUrl='https://api.foursquare.com/v2/venues/explore?near=' +this.cityStr+ '&&client_id=WMGXUPU15HUVPMTMGK3WZPHVGBXKPXWMUQ5WW3DMRSOZUIH5&client_secret=RFUOHDP441JSHFBS1AS0KLAGRVVRGNL2VACN0RHIJJNC5AT2&v=20130815&query=sushi';
+        
+        
+        
+            //Ajax request for nyTimes
             $.getJSON( nyTimesUrl, function( data ) {
 	           $nytElem.text('New York Times articles about: ' + this.cityStr);
                var articles= data.response.docs;
@@ -140,6 +148,26 @@
 			    clearTimeout(wikiRequestTimeout); //Clears setTimeout function in case of successful request
 		       }
 	       });
+
+          //Ajax request for Foursquare:
+          $.getJSON(foursquareUrl, function(data) {
+            var city=octopus.getCurrentCity();
+             $foursquareElem.text('Foursquare places in:' + city);
+               var places= data.response.groups[0].items;
+               console.log(places);
+              for (var i=0; i< places.length; i++) {
+  
+              var place= places[i];
+             $foursquareElem.append('<li class= "article">' + '<p>' + place.venue.name + ' </p> ' + '</li>');
+              };
+
+             }).error(function(e){ 
+  
+             $foursquareElem.text("New York articles Could not be loaded");
+          })
+
+
+
 
          //view.renderMap();
            view.renderGeocode();
