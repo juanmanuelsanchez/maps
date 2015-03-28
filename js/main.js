@@ -1,15 +1,21 @@
 
   (function() {
 
+    var foursquareplaces=[];
 
   	var model= {
 
       currentCity:null,
       currentStreet:null,
       currentAddress:null,
+      foursquarePlaces:null,
       locations:[],
+      
 
   	};
+
+
+   var lugares;
 
   	var octopus= {
 
@@ -40,6 +46,11 @@
           model.locations.push(location);
         },
 
+        setCurrentFoursquarePlaces: function(places) {
+         
+           
+        }, 
+
         getCurrentCity: function() {
 
           return model.currentCity;
@@ -58,8 +69,12 @@
         getCurrentLocation: function() {
 
           return model.locations;
-        }
+        },
 
+        getCurrentFoursquarePlaces: function() {
+
+        
+        },
 
   	};
 
@@ -106,8 +121,8 @@
         var wikipediaUrl='http://en.wikipedia.org/w/api.php?action=opensearch&search=' +this.cityStr+ '&format=json&callback=wikiCallback';
         //var foursquareUrl='https://api.foursquare.com/v2/venues/explore?ll=40.7,-74&&client_id=' + clientID+ '&client_secret=' + clientSecret + '&v=20130815&query=sushi';
         //var foursquareUrl='https://api.foursquare.com/v2/venues/explore?ll=40.7,-74&&client_id=WMGXUPU15HUVPMTMGK3WZPHVGBXKPXWMUQ5WW3DMRSOZUIH5&client_secret=RFUOHDP441JSHFBS1AS0KLAGRVVRGNL2VACN0RHIJJNC5AT2&v=20130815&query=sushi';
-        var foursquareUrl='https://api.foursquare.com/v2/venues/explore?near=' +this.cityStr+ '&&client_id=WMGXUPU15HUVPMTMGK3WZPHVGBXKPXWMUQ5WW3DMRSOZUIH5&client_secret=RFUOHDP441JSHFBS1AS0KLAGRVVRGNL2VACN0RHIJJNC5AT2&v=20130815&query=sushi';
-        
+        //var foursquareUrl='https://api.foursquare.com/v2/venues/explore?near=' +this.cityStr+ '&&client_id=WMGXUPU15HUVPMTMGK3WZPHVGBXKPXWMUQ5WW3DMRSOZUIH5&client_secret=RFUOHDP441JSHFBS1AS0KLAGRVVRGNL2VACN0RHIJJNC5AT2&v=20130815&query=sushi';
+        var foursquareUrl='https://api.foursquare.com/v2/venues/explore?near=' +this.cityStr+ '&&client_id=' +clientID+ '&client_secret=' +clientSecret+ '&v=20130815&query=sushi';
         
         
             //Ajax request for nyTimes
@@ -154,20 +169,31 @@
             var city=octopus.getCurrentCity();
              $foursquareElem.text('Foursquare places in:' + city);
                var places= data.response.groups[0].items;
-               console.log(places);
+               octopus.setCurrentFoursquarePlaces(places);
+               //console.log(places);
+            
               for (var i=0; i< places.length; i++) {
   
               var place= places[i];
-             $foursquareElem.append('<li class= "article">' + '<p>' + place.venue.name + ' </p> ' + '</li>');
+              var name= place.venue.name;
+              var address=place.venue.location.address;
+             $foursquareElem.append('<li class= "article">' + place.venue.name + '</li>');
+
+              foursquareplaces.push({
+                    
+                    name: name,
+                    address: address,
+
+              });
+
               };
 
+              
              }).error(function(e){ 
   
              $foursquareElem.text("New York articles Could not be loaded");
-          })
-
-
-
+          });
+            
 
          //view.renderMap();
            view.renderGeocode();
@@ -216,7 +242,6 @@
       },
 
       renderGeocode: function() {
-
           var map;
           var locations;        
           var mapOptions = {
@@ -226,19 +251,24 @@
    
           map = new google.maps.Map(document.getElementById('mapDiv'), mapOptions);
 
+         
 
          function locationFinder() {
+           
+          
            var i=0;
            var locationsData= octopus.getCurrentLocation();
            var locations = [];
-           
+
            for(i; i<locationsData.length; i++) {
             
                var location= locationsData[i];
                locations.push(location);
          }
-      
 
+
+      
+          console.log(foursquareplaces);
           console.log(locations);
           return locations;
 
@@ -291,7 +321,7 @@
       }
 
       function pinPoster(locations) {
-
+       
         var service = new google.maps.places.PlacesService(map);
     
         for (place in locations) {
@@ -304,22 +334,27 @@
         }
       }
 
+
         window.mapBounds = new google.maps.LatLngBounds();
 
   
         locations = locationFinder();
         pinPoster(locations);
 
+       
+
         window.addEventListener('resize', function(e) {
         map.fitBounds(mapBounds);
       });
+
+
       
       },
 
-
-
+     
+     
     };
-  
+   
   octopus.init();
 
 }());
