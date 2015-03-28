@@ -8,14 +8,11 @@
       currentCity:null,
       currentStreet:null,
       currentAddress:null,
-      foursquarePlaces:null,
+      foursquarePlaces:[],
       locations:[],
       
 
   	};
-
-
-   var lugares;
 
   	var octopus= {
 
@@ -40,14 +37,16 @@
            model.currentAddress= address;
         },
 
-        setCurrentLocations: function(location) {
+        setCurrentLocations: function() {
 
-
-          model.locations.push(location);
+          for (var i=0; i<arguments.length; i++) {
+          model.locations.push(arguments[i]);
+          }
         },
 
         setCurrentFoursquarePlaces: function(places) {
          
+          
            
         }, 
 
@@ -72,7 +71,8 @@
         },
 
         getCurrentFoursquarePlaces: function() {
-
+         
+          return model.foursquarePlaces;
         
         },
 
@@ -82,13 +82,13 @@
   	var view= {
 
 
-  		init: function() {
+  		init:function(){
 
           $('#form-container').submit(this.render);
 
   		},
 
-        render: function() {
+        render:function(){
 
         var $body= $('body');
     		var $wikiElem= $('#wikipedia-links');
@@ -169,7 +169,7 @@
             var city=octopus.getCurrentCity();
              $foursquareElem.text('Foursquare places in:' + city);
                var places= data.response.groups[0].items;
-               octopus.setCurrentFoursquarePlaces(places);
+               
                //console.log(places);
             
               for (var i=0; i< places.length; i++) {
@@ -177,17 +177,24 @@
               var place= places[i];
               var name= place.venue.name;
               var address=place.venue.location.address;
+              var location= name + ',' + address + ',' + city;
+              octopus.setCurrentLocations(location);
              $foursquareElem.append('<li class= "article">' + place.venue.name + '</li>');
 
-              foursquareplaces.push({
+              model.foursquarePlaces.push({
                     
                     name: name,
                     address: address,
+                    ubication: name + ',' + address + ',' + city
 
-              });
+                });
 
+              //foursquareplaces.push(location);
+               
               };
-
+             
+             
+              
               
              }).error(function(e){ 
   
@@ -198,13 +205,13 @@
          //view.renderMap();
            view.renderGeocode();
 
-	        console.log(this.cityStr);
+	        //console.log(this.cityStr);
             return false;
-          
     	},
 
       renderMap: function() {
           var map;
+          var locations;
           var latlng= new google.maps.LatLng(40.748817, -73.985428);
           var mapOptions= {
 
@@ -242,10 +249,9 @@
       },
 
       renderGeocode: function() {
-          var map;
-          var locations;        
+          var map;     
           var mapOptions = {
-          disableDefaultUI: true
+          disableDefaultUI: false
 
           };
    
@@ -254,25 +260,63 @@
          
 
          function locationFinder() {
-           
-          
-           var i=0;
+           //var sushiRestaurants= octopus.getCurrentFoursquarePlaces();
+           //console.log(sushiRestaurants);
+
+           //var i=0;
+           var j=0;
            var locationsData= octopus.getCurrentLocation();
-           var locations = [];
+           //console.log(locationsData);
+           //var locationsData2= octopus.getCurrentFoursquarePlaces();
+           //console.log(locationsData2);
+          // var length= locationsData2.length;
+          var locations=[];
+         
 
-           for(i; i<locationsData.length; i++) {
-            
-               var location= locationsData[i];
-               locations.push(location);
-         }
+           
+           /*for (j; j<locationsData.length; j++){
 
-
+               var inputLocation= locationsData[j];
+               locations.push(inputLocation);
+                 
+           }*/
+        
       
-          console.log(foursquareplaces);
-          console.log(locations);
-          return locations;
+           /*for (i=0; i<length; i++) {
+               
+          
+               var location= locationsData2[i];
+               var placesLocations= location.ubication;
+               
+               locations.push(placesLocations);
+         }*/
+
+           /*for(var item in locationsData){
+
+              var ubicacion= locationsData[item].ubication;
+              locations.push(ubicacion);
+           }*/
+
+          /* for(j; j<sushiRestaurants.length; j++) {
+
+               var sushiRestaurant= sushiRestaurants[j];
+               locations.push(sushiRestaurant);
+           }*/
+
+
+          //console.log(placesLocations);
+          //console.log(locations);
+
+          /*for (j; j<locationsData.length; j++){
+          
+          var location= locationsData[j];
+          locations.push(location);
 
         }
+        console.log(locations);
+        return locations;*/
+        return locationsData;
+      }
 
 
         function createMapMarker(placeData) {
@@ -309,13 +353,15 @@
       function callback(results, status) {
         var i=0;
         var length= results.length;
+        console.log(length);
        if (status == google.maps.places.PlacesServiceStatus.OK) {
-       createMapMarker(results[0])
-       //for(i; i<length; i++ ) {
+       //createMapMarker(results[0])
+          for(i; i<length; i++ ) {
          
-         //createMapMarker(results[i]);
+         createMapMarker(results[i]);
 
-       //}
+         }
+
 
         }
       }
@@ -345,14 +391,11 @@
 
         window.addEventListener('resize', function(e) {
         map.fitBounds(mapBounds);
-      });
+          
 
+          })
+      }
 
-      
-      },
-
-     
-     
     };
    
   octopus.init();
