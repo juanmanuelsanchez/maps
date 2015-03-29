@@ -1,15 +1,21 @@
 
+   
+
   (function() {
 
     var foursquareplaces=[];
 
+  
+  
+   
   	var model= {
 
-      currentCity:null,
+      currentCity: "Bilbao",
       currentStreet:null,
       currentAddress:null,
       foursquarePlaces:[],
       locations:[],
+      data:[],
       
 
   	};
@@ -18,7 +24,9 @@
 
           init: function(){
 
-          	view.init();
+          	viewApp.init();
+            viewApp.display();
+
           
          },
 
@@ -37,18 +45,27 @@
            model.currentAddress= address;
         },
 
-        setCurrentLocations: function() {
+        setCurrentLocations: function(location) {
 
-          for (var i=0; i<arguments.length; i++) {
+          /*for (var i=0; i<arguments.length; i++) {
           model.locations.push(arguments[i]);
-          }
+          }*/
+          model.locations.push(location);
         },
 
         setCurrentFoursquarePlaces: function(places) {
          
-          
-           
+         for (var i=0; i<arguments.length; i++) {
+          model.foursquarePlaces.push(arguments[i]);
+          }
+              
         }, 
+
+        setData: function(data) {
+
+          model.data= data;
+
+        },
 
         getCurrentCity: function() {
 
@@ -76,19 +93,25 @@
         
         },
 
+        getData: function() {
+         
+          return model.data;
+
+        }
+
   	};
 
 
-  	var view= {
+  	var viewApp= {
 
 
-  		init:function(){
+  		init: function(){
 
-          $('#form-container').submit(this.render);
+        $('#form-container').submit(this.search);
 
   		},
 
-        render:function(){
+      search: function(){
 
         var $body= $('body');
     		var $wikiElem= $('#wikipedia-links');
@@ -99,20 +122,18 @@
     		    $wikiElem.text("");
             $nytElem.text("");
             $foursquareElem.text("");
-        this.shopStr= $('#shop').val();
-    		this.streetStr= $('#street').val();
+        //this.shopStr= $('#shop').val();
+    		//this.streetStr= $('#street').val();
 	      this.cityStr= $('#city').val();
-	      this.address= this.streetStr + ',' + this.cityStr;
-        this.location= this.shopStr + ',' + this.address;
+	      this.address=/*this.streetStr + ',' + */this.cityStr;
+        this.location=/*this.shopStr + ',' + */this.address;
         $greeting.text("So you want to live at " + this.address + " ? ");
-        console.log(this.address);
         console.log(this.location);
 
-        octopus.setCurrentStreet(this.streetStr);
+        //octopus.setCurrentStreet(this.streetStr);
         octopus.setCurrentCity(this.cityStr);
         octopus.setCurrentAddress(this.address);
-        octopus.setCurrentLocations(this.location);
-
+        //octopus.setCurrentLocations(this.location);
 
         var clientID='WMGXUPU15HUVPMTMGK3WZPHVGBXKPXWMUQ5WW3DMRSOZUIH5';
         var clientSecret='RFUOHDP441JSHFBS1AS0KLAGRVVRGNL2VACN0RHIJJNC5AT2';
@@ -123,7 +144,7 @@
         //var foursquareUrl='https://api.foursquare.com/v2/venues/explore?ll=40.7,-74&&client_id=WMGXUPU15HUVPMTMGK3WZPHVGBXKPXWMUQ5WW3DMRSOZUIH5&client_secret=RFUOHDP441JSHFBS1AS0KLAGRVVRGNL2VACN0RHIJJNC5AT2&v=20130815&query=sushi';
         //var foursquareUrl='https://api.foursquare.com/v2/venues/explore?near=' +this.cityStr+ '&&client_id=WMGXUPU15HUVPMTMGK3WZPHVGBXKPXWMUQ5WW3DMRSOZUIH5&client_secret=RFUOHDP441JSHFBS1AS0KLAGRVVRGNL2VACN0RHIJJNC5AT2&v=20130815&query=sushi';
         var foursquareUrl='https://api.foursquare.com/v2/venues/explore?near=' +this.cityStr+ '&&client_id=' +clientID+ '&client_secret=' +clientSecret+ '&v=20130815&query=sushi';
-        
+       
         
             //Ajax request for nyTimes
             $.getJSON( nyTimesUrl, function( data ) {
@@ -164,57 +185,104 @@
 		       }
 	       });
 
+
+         /*$.getJSON(foursquareUrl, {
+
+          format: "json"
+         })
+           .done(function(data){
+            
+            var city= octopus.getCurrentCity();
+            $foursquareElem.text('Foursquare places in:' + city);
+            var places= data.response.groups[0].items;
+            console.log(places);
+            for (item in places) {
+
+              var name= places[item].venue.name;
+              var address= places[item].venue.location.address;
+              var lat= places[item].venue.location.lat;
+              var lng= places[item].venue.location.lng;
+              var location= name + ', ' + address + ', ' + city;
+              octopus.setCurrentLocations(location);
+
+              $foursquareElem.append('<li class= "article">' + name + '</li>');
+
+             
+            }
+
+           })
+            .error(function(e){ 
+  
+             $foursquareElem.text("Foursquare articles Could not be loaded");
+          });*/
+         function getDataFoursquare(callback) {
+
+          var locations=[];
           //Ajax request for Foursquare:
           $.getJSON(foursquareUrl, function(data) {
             var city=octopus.getCurrentCity();
              $foursquareElem.text('Foursquare places in:' + city);
-               var places= data.response.groups[0].items;
-               
-               //console.log(places);
-            
+              var places= data.response.groups[0].items;
+              //console.log(places); 
+             
               for (var i=0; i< places.length; i++) {
   
               var place= places[i];
               var name= place.venue.name;
               var address=place.venue.location.address;
               var location= name + ',' + address + ',' + city;
-              octopus.setCurrentLocations(location);
+              //octopus.setCurrentLocations(location);
+              //octopus.setCurrentFoursquarePlaces(location);
+              locations.push(location);
+
+              callback(locations);
+
+
              $foursquareElem.append('<li class= "article">' + place.venue.name + '</li>');
+   
+             }
 
-              model.foursquarePlaces.push({
-                    
-                    name: name,
-                    address: address,
-                    ubication: name + ',' + address + ',' + city
-
-                });
-
-              //foursquareplaces.push(location);
-               
-              };
-             
-             
-              
-              
              }).error(function(e){ 
   
-             $foursquareElem.text("New York articles Could not be loaded");
+             $foursquareElem.text("Foursquare articles Could not be loaded");
           });
-            
 
-         //view.renderMap();
-           view.renderGeocode();
+             return false;
 
-	        //console.log(this.cityStr);
-            return false;
+         }
+
+         getDataFoursquare(function(placeData){
+
+
+           var lugares= placeData;
+
+            viewMap.init(lugares);
+
+         })
+
+          
+             //viewMap.init();
+             return false;
+
     	},
 
-      renderMap: function() {
-          var map;
-          var locations;
-          var latlng= new google.maps.LatLng(40.748817, -73.985428);
-          var mapOptions= {
 
+         display: function() {
+
+            window.addEventListener('load', viewMap.initFirst());
+         },
+
+
+    };
+
+    var viewMap= {
+
+     
+      initFirst: function() {
+          var map;
+          var latlng= new google.maps.LatLng(43.25696290, -2.92344090);
+          var mapOptions= {
+            disableDefaultUI: true,
             zoom: 8,
             center:latlng
           }
@@ -248,10 +316,13 @@
 
       },
 
-      renderGeocode: function() {
+      init: function(lugares) {
+          var _lugares= lugares;
           var map;     
+          var locations;
           var mapOptions = {
-          disableDefaultUI: false
+
+          disableDefaultUI: true
 
           };
    
@@ -259,63 +330,14 @@
 
          
 
-         function locationFinder() {
-           //var sushiRestaurants= octopus.getCurrentFoursquarePlaces();
-           //console.log(sushiRestaurants);
+         function locationFinder(_lugares) {
 
-           //var i=0;
-           var j=0;
-           var locationsData= octopus.getCurrentLocation();
-           //console.log(locationsData);
-           //var locationsData2= octopus.getCurrentFoursquarePlaces();
-           //console.log(locationsData2);
-          // var length= locationsData2.length;
-          var locations=[];
-         
+          var locations= _lugares;
+          console.log(locations);
 
-           
-           /*for (j; j<locationsData.length; j++){
 
-               var inputLocation= locationsData[j];
-               locations.push(inputLocation);
-                 
-           }*/
+          return locations;
         
-      
-           /*for (i=0; i<length; i++) {
-               
-          
-               var location= locationsData2[i];
-               var placesLocations= location.ubication;
-               
-               locations.push(placesLocations);
-         }*/
-
-           /*for(var item in locationsData){
-
-              var ubicacion= locationsData[item].ubication;
-              locations.push(ubicacion);
-           }*/
-
-          /* for(j; j<sushiRestaurants.length; j++) {
-
-               var sushiRestaurant= sushiRestaurants[j];
-               locations.push(sushiRestaurant);
-           }*/
-
-
-          //console.log(placesLocations);
-          //console.log(locations);
-
-          /*for (j; j<locationsData.length; j++){
-          
-          var location= locationsData[j];
-          locations.push(location);
-
-        }
-        console.log(locations);
-        return locations;*/
-        return locationsData;
       }
 
 
@@ -380,11 +402,11 @@
         }
       }
 
-
+       
         window.mapBounds = new google.maps.LatLngBounds();
 
   
-        locations = locationFinder();
+        locations = locationFinder(_lugares);
         pinPoster(locations);
 
        
