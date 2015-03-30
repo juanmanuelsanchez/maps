@@ -25,7 +25,7 @@
           init: function(){
 
           	viewApp.init();
-            viewApp.display();
+            //viewApp.display();
 
           
          },
@@ -287,8 +287,29 @@
 
         function locationFinder() {
 
-          var locations= octopus.getCurrentLocation();
-          console.log(locations);
+          var locationsData= octopus.getCurrentLocation();
+          var city= octopus.getCurrentCity();
+          var length= locationsData.length;
+          var i=0;
+          var j=0;
+          var locations=[];
+          
+
+          for(i; i<length; i++){
+
+            var item= locationsData[i];
+            var itemName= item.venue.name;
+            var itemLocation= item.venue.location.address;
+            var itemAddress= itemName + ',' + itemLocation;
+            var location= itemAddress + ',' + city;
+
+            locations.push(location);
+
+          }
+             //var locationsCut= locations.splice(0,4);
+             console.log(locations);
+             //console.log(locationsCut);
+             return locations;
 
         }
 
@@ -324,17 +345,16 @@
 
 
       function callback(results, status) {
-        var i=0;
-        var length= results.length;
-        console.log(length);
+        //var i=0;
+        //var length= results.length;
+        //console.log(length);
        if (status == google.maps.places.PlacesServiceStatus.OK) {
-       //createMapMarker(results[0])
-          for(i; i<length; i++ ) {
+           createMapMarker(results[0]);
+          //for(i; i<length; i++) {
          
-         createMapMarker(results[i]);
+         //createMapMarker(results[i]);
 
-         }
-
+          //}
 
         }
       }
