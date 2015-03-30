@@ -336,7 +336,7 @@
           console.log(locations);
 
 
-          return locations;
+          //return locations;
         
       }
 
