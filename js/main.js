@@ -47,10 +47,7 @@
 
         setCurrentLocations: function(location) {
 
-          /*for (var i=0; i<arguments.length; i++) {
-          model.locations.push(arguments[i]);
-          }*/
-          model.locations.push(location);
+          model["locations"]=location;
         },
 
         setCurrentFoursquarePlaces: function(places) {
@@ -138,11 +135,7 @@
         var clientID='WMGXUPU15HUVPMTMGK3WZPHVGBXKPXWMUQ5WW3DMRSOZUIH5';
         var clientSecret='RFUOHDP441JSHFBS1AS0KLAGRVVRGNL2VACN0RHIJJNC5AT2';
         var nyTimesUrl='http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' +this.cityStr+ '&sort=newest&api-key=f0331a394e4a5cd0ad8270cfcf7332a7:14:70756973';
- 
         var wikipediaUrl='http://en.wikipedia.org/w/api.php?action=opensearch&search=' +this.cityStr+ '&format=json&callback=wikiCallback';
-        //var foursquareUrl='https://api.foursquare.com/v2/venues/explore?ll=40.7,-74&&client_id=' + clientID+ '&client_secret=' + clientSecret + '&v=20130815&query=sushi';
-        //var foursquareUrl='https://api.foursquare.com/v2/venues/explore?ll=40.7,-74&&client_id=WMGXUPU15HUVPMTMGK3WZPHVGBXKPXWMUQ5WW3DMRSOZUIH5&client_secret=RFUOHDP441JSHFBS1AS0KLAGRVVRGNL2VACN0RHIJJNC5AT2&v=20130815&query=sushi';
-        //var foursquareUrl='https://api.foursquare.com/v2/venues/explore?near=' +this.cityStr+ '&&client_id=WMGXUPU15HUVPMTMGK3WZPHVGBXKPXWMUQ5WW3DMRSOZUIH5&client_secret=RFUOHDP441JSHFBS1AS0KLAGRVVRGNL2VACN0RHIJJNC5AT2&v=20130815&query=sushi';
         var foursquareUrl='https://api.foursquare.com/v2/venues/explore?near=' +this.cityStr+ '&&client_id=' +clientID+ '&client_secret=' +clientSecret+ '&v=20130815&query=sushi';
        
         
@@ -185,59 +178,25 @@
 		       }
 	       });
 
-
-         /*$.getJSON(foursquareUrl, {
-
-          format: "json"
-         })
-           .done(function(data){
-            
-            var city= octopus.getCurrentCity();
-            $foursquareElem.text('Foursquare places in:' + city);
-            var places= data.response.groups[0].items;
-            console.log(places);
-            for (item in places) {
-
-              var name= places[item].venue.name;
-              var address= places[item].venue.location.address;
-              var lat= places[item].venue.location.lat;
-              var lng= places[item].venue.location.lng;
-              var location= name + ', ' + address + ', ' + city;
-              octopus.setCurrentLocations(location);
-
-              $foursquareElem.append('<li class= "article">' + name + '</li>');
-
-             
-            }
-
-           })
-            .error(function(e){ 
-  
-             $foursquareElem.text("Foursquare articles Could not be loaded");
-          });*/
-         function getDataFoursquare(callback) {
-
-          var locations=[];
+          function getDataFoursquare(callback) {
+         
           //Ajax request for Foursquare:
           $.getJSON(foursquareUrl, function(data) {
             var city=octopus.getCurrentCity();
              $foursquareElem.text('Foursquare places in:' + city);
               var places= data.response.groups[0].items;
               //console.log(places); 
-             
+              octopus.setCurrentLocations(places);
+
               for (var i=0; i< places.length; i++) {
   
               var place= places[i];
               var name= place.venue.name;
               var address=place.venue.location.address;
               var location= name + ',' + address + ',' + city;
-              //octopus.setCurrentLocations(location);
-              //octopus.setCurrentFoursquarePlaces(location);
-              locations.push(location);
 
-              callback(locations);
-
-
+               callback(places);
+  
              $foursquareElem.append('<li class= "article">' + place.venue.name + '</li>');
    
              }
@@ -246,22 +205,20 @@
   
              $foursquareElem.text("Foursquare articles Could not be loaded");
           });
-
-             return false;
+             
+              return false;
 
          }
-
-         getDataFoursquare(function(placeData){
+            getDataFoursquare(function(placeData){
 
 
            var lugares= placeData;
-
-            viewMap.init(lugares);
+            //octopus.setCurrentLocations(lugares);
+            viewMap.init();
 
          })
-
-          
-             //viewMap.init();
+         
+             
              return false;
 
     	},
@@ -316,8 +273,7 @@
 
       },
 
-      init: function(lugares) {
-          var _lugares= lugares;
+      init: function() {
           var map;     
           var locations;
           var mapOptions = {
@@ -328,18 +284,13 @@
    
           map = new google.maps.Map(document.getElementById('mapDiv'), mapOptions);
 
-         
 
-         function locationFinder(_lugares) {
+        function locationFinder() {
 
-          var locations= _lugares;
+          var locations= octopus.getCurrentLocation();
           console.log(locations);
 
-
-          //return locations;
-        
-      }
-
+        }
 
         function createMapMarker(placeData) {
 
@@ -406,7 +357,7 @@
         window.mapBounds = new google.maps.LatLngBounds();
 
   
-        locations = locationFinder(_lugares);
+        locations = locationFinder();
         pinPoster(locations);
 
        
