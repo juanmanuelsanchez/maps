@@ -194,7 +194,7 @@
          getDataFoursquare(function(locationsData, placeData){
 
       
-            lugares= locationsData.slice(6,-3);
+            lugares= locationsData.slice(5,-4);
             places= placeData;
 
           
@@ -202,7 +202,7 @@
             octopus.setCurrentFoursquarePlaces(places);
             viewList.init();
             viewMap.init();
-            viewAdmin.init();
+            //viewAdmin.init();
            
 
          })
@@ -240,7 +240,9 @@
     var viewMap= {
 
       init: function() {
-        
+          var showButton= document.getElementById("show");
+          var hideButton= document.getElementById("hide");
+          var markers=[];
           var map;     
           var locations;
           var mapOptions = {
@@ -280,7 +282,8 @@
             title: name+ ", "+address
 
           });
-    
+          
+          markers.push(marker);
           var infoWindow = new google.maps.InfoWindow({
 
             content: name+ ", "+address
@@ -325,6 +328,27 @@
           }
         }
 
+        function setAllMap(map) {
+          var j=0;
+          var length= markers.length;
+          for(j; j<length; j++) {
+
+            markers[j].setMap(map);
+          }
+
+        }
+
+        function clearMarkers() {
+
+          setAllMap(null);
+        }
+
+        function showMarkers() {
+
+          setAllMap(map);
+
+        }
+
        
         window.mapBounds = new google.maps.LatLngBounds();
 
@@ -339,6 +363,23 @@
           
 
         })
+
+        showButton.addEventListener('click', function() {
+    
+        
+        showMarkers();
+
+    
+        }, false);
+
+
+        hideButton.addEventListener('click', function() {
+    
+         clearMarkers();
+    
+         }, false);
+
+
       }
 
     };

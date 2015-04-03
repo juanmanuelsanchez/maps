@@ -53,3 +53,14 @@ body {background-color: #CCC;}
 	padding:0px;
 	text-align:center;
 }
+#panel {
+
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    margin-left: -180px;
+    z-index: 5;
+    background-color: #fff;
+    padding: 5px;
+    border: 1px solid #999;
+}
