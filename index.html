@@ -9,9 +9,15 @@
 </head>
 <body>
 
+    <h4>SEARCH:</h4>
+      <div>
+        <input type="text" name="country" id="autocomplete"/>
+      </div>
+      <div id="selection"></div>
+
     <div id="panel">
-      <input id="hide" type=button value="Hide Markers">
-      <input id="show" type=button value="Show All Markers">
+      <button id="hide">Hide markers</button> 
+      <button id="show">Show markers</button> 
     </div>
 
     <h2 id="greeting" class="greeting">Where do you want to eat?</h2>
@@ -35,6 +41,7 @@
     <h2>How about some Sushi?</h2>
     <div id="mapDiv"></div>
     <script src="js/libs/jquery.min.js"></script>
+    <script src="js/libs/jquery.autocomplete.min.js"></script>
     <script src="js/main3.js"></script>
 </body>
 </html>

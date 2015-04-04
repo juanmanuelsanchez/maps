@@ -194,7 +194,7 @@
          getDataFoursquare(function(locationsData, placeData){
 
       
-            lugares= locationsData.slice(5,-4);
+            lugares= locationsData.slice(6,-3);
             places= placeData;
 
           
@@ -202,6 +202,7 @@
             octopus.setCurrentFoursquarePlaces(places);
             viewList.init();
             viewMap.init();
+            viewSearchBar.init();
             //viewAdmin.init();
            
 
@@ -236,6 +237,30 @@
        }
 
     };
+
+    var viewSearchBar= {
+
+      init: function() {
+             var listItems=[];
+                 listItems= octopus.getCurrentLocation();
+
+
+            // Initialize autocomplete with local lookup:
+            $('#autocomplete').devbridgeAutocomplete({
+                lookup: listItems,
+                minChars: 1,
+                onSelect: function (suggestion) {
+                $('#selection').html('You selected: ' + suggestion.value);
+                },
+                showNoSuggestionNotice: true,
+                noSuggestionNotice: 'Sorry, no matching results'
+
+            });
+
+      },
+
+    };
+
 
     var viewMap= {
 
