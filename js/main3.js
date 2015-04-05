@@ -279,26 +279,19 @@
                      listSuggestions.push(location);
                   }
 
-                  console.log(listSuggestions);
+                  //console.log(listSuggestions);
+                  pinPoster(listSuggestions);
 
                 },
                 onSelect: function (suggestion) {
 
                   //console.log(suggestion.value);
-                  var newLocation= suggestion.value;
-                  console.log(newLocation);
-                  resetMarkers(newLocation);
-                  //clearMarkers();
-                  //locations= newLocation;
-                 //pinPoster(locations);
-                //$('#selection').html('You selected: ' + suggestion.value);
-                //createMapMarker(suggestion.value);
-                
-
-                //showMarkers();
-               
-                //return suggestion.value;
-
+                  var newList=[];
+                  var newLocation=suggestion.value;
+                  newList.push(newLocation);
+                  console.log(newList);
+                  clearMarkers();
+                  pinPoster(newList);
                 },
                 showNoSuggestionNotice: true,
                 noSuggestionNotice: 'Sorry, no matching results'
