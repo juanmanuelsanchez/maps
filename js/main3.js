@@ -38,6 +38,11 @@
           model["locations"]=location;
         },
 
+        resetCurrentLocations: function() {
+
+         model["locations"]=null;
+        },
+
         setCurrentFoursquarePlaces: function(place) {
          
           model["foursquarePlaces"]=place; 
@@ -91,13 +96,13 @@
 
         
        var $body=$('body');
-       var $wikiElem=$('#wikipedia-links');
-       var $nytHeaderElem= $('#nytimes-header');
-       var $nytElem= $('#nytimes-articles');
+       //var $wikiElem=$('#wikipedia-links');
+       //var $nytHeaderElem= $('#nytimes-header');
+       //var $nytElem= $('#nytimes-articles');
        var $foursquareElem= $('#foursquare-places');
        var $greeting= $('.greeting');
-           $wikiElem.text("");
-           $nytElem.text("");
+           //$wikiElem.text("");
+           //$nytElem.text("");
            $foursquareElem.text("");
            //$greeting.text("");
 
@@ -106,14 +111,14 @@
        $greeting.text= ("So you want to eat sushi at " + currentCity + " ? ");
        var clientID='WMGXUPU15HUVPMTMGK3WZPHVGBXKPXWMUQ5WW3DMRSOZUIH5';
        var clientSecret='RFUOHDP441JSHFBS1AS0KLAGRVVRGNL2VACN0RHIJJNC5AT2';
-       var nyTimesUrl='http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' +currentCity+ '&sort=newest&api-key=f0331a394e4a5cd0ad8270cfcf7332a7:14:70756973';
-       var wikipediaUrl='http://en.wikipedia.org/w/api.php?action=opensearch&search=' +currentCity+ '&format=json&callback=wikiCallback';
+       //var nyTimesUrl='http://api.nytimes.com/svc/search/v2/articlesearch.json?q=' +currentCity+ '&sort=newest&api-key=f0331a394e4a5cd0ad8270cfcf7332a7:14:70756973';
+       //var wikipediaUrl='http://en.wikipedia.org/w/api.php?action=opensearch&search=' +currentCity+ '&format=json&callback=wikiCallback';
        var foursquareUrl='https://api.foursquare.com/v2/venues/explore?near=' +currentCity+ '&&client_id=' +clientID+ '&client_secret=' +clientSecret+ '&v=20130815&query=sushi';
        var lugares=[];
        var places=[];
 
        //Ajax requests
-       $.getJSON( nyTimesUrl, function( data ) {
+      /* $.getJSON( nyTimesUrl, function( data ) {
          var city= octopus.getCurrentCity();
          $nytElem.text('New York Times articles about: ' + city);
          var articles= data.response.docs;
@@ -126,11 +131,11 @@
   
          $nytHeaderElem.text("New York articles Could not be loaded");
 
-       })
+       })*/
 
 
        //JSONP error handling (there's no a specific error handling for JSONP in JQuery) with setTimeout
-        var wikiRequestTimeout= setTimeout(function() {
+        /*var wikiRequestTimeout= setTimeout(function() {
 
           $wikiElem.text("failed to get wikipedia resources");
 
@@ -157,7 +162,7 @@
            
           }
 
-        });
+        });*/
 
         //Ajax request for Foursquare inside a callback function
         function getDataFoursquare(callback) {
@@ -173,7 +178,8 @@
                 var place= places[i];
                 var name= place.venue.name;
                 var address=place.venue.location.address;
-                var location= name+ ' , ' +address+ ' , ' +city;
+                var country= "ES";
+                var location= name+ ' , ' +address+ ' , ' +city+ ' , '+country;
              
                 locations.push(location);
 
@@ -200,9 +206,8 @@
           
             octopus.setCurrentLocations(lugares);
             octopus.setCurrentFoursquarePlaces(places);
-            viewList.init();
+            //viewList.init();
             viewMap.init();
-            viewSearchBar.init();
             //viewAdmin.init();
            
 
@@ -238,29 +243,7 @@
 
     };
 
-    var viewSearchBar= {
-
-      init: function() {
-             var listItems=[];
-                 listItems= octopus.getCurrentLocation();
-
-
-            // Initialize autocomplete with local lookup:
-            $('#autocomplete').devbridgeAutocomplete({
-                lookup: listItems,
-                minChars: 1,
-                onSelect: function (suggestion) {
-                $('#selection').html('You selected: ' + suggestion.value);
-                },
-                showNoSuggestionNotice: true,
-                noSuggestionNotice: 'Sorry, no matching results'
-
-            });
-
-      },
-
-    };
-
+  
 
     var viewMap= {
 
@@ -270,21 +253,64 @@
           var markers=[];
           var map;     
           var locations;
+          var data;
+          var listItems=[];
+              listItems= octopus.getCurrentLocation();
           var mapOptions = {
 
           disableDefaultUI: true
 
           };
+
+          var listSuggestions=[];
    
           map = new google.maps.Map(document.getElementById('mapDiv'), mapOptions);
 
-         
+         // Initialize autocomplete with local lookup:
+            $('#autocomplete').devbridgeAutocomplete({
+                lookup: listItems,
+                minChars: 1,
+                onSearchComplete: function (lookup, suggestions) {
+                  
+                  //console.log(suggestions);
+                  for(suggestion in suggestions){
+
+                     var location= suggestions[suggestion].value;
+                     listSuggestions.push(location);
+                  }
+
+                  console.log(listSuggestions);
+
+                },
+                onSelect: function (suggestion) {
+
+                  //console.log(suggestion.value);
+                  var newLocation= suggestion.value;
+                  console.log(newLocation);
+                  resetMarkers(newLocation);
+                  //clearMarkers();
+                  //locations= newLocation;
+                 //pinPoster(locations);
+                //$('#selection').html('You selected: ' + suggestion.value);
+                //createMapMarker(suggestion.value);
+                
+
+                //showMarkers();
+               
+                //return suggestion.value;
+
+                },
+                showNoSuggestionNotice: true,
+                noSuggestionNotice: 'Sorry, no matching results'
+
+            });
 
       
         function locationFinder() {
-
+          //console.log(suggestion);
+          //var locations= octopus.getCurrentCity();
           var locations= octopus.getCurrentLocation();
-          //console.log(locations);
+          console.log(locations);
           var places= octopus.getCurrentFoursquarePlaces();
           //console.log(places);
 
@@ -293,7 +319,8 @@
         }
 
         function createMapMarker(placeData) {
-          console.log(placeData);
+          data= placeData;
+          console.log(data);
           var lat = placeData.geometry.location.lat();  
           var lon = placeData.geometry.location.lng();  
           var address = placeData.formatted_address;
@@ -309,6 +336,7 @@
           });
           
           markers.push(marker);
+
           var infoWindow = new google.maps.InfoWindow({
 
             content: name+ ", "+address
@@ -324,6 +352,24 @@
           map.fitBounds(bounds);
 
           map.setCenter(bounds.getCenter());
+
+        }
+
+        function resetMarkers(place) {
+            
+            var placeName=place;
+     
+           
+          for (item in data){
+
+            var name= data[item].name;
+            var address= data[item].formatted_address;
+
+             if (name===placeName + address){
+
+              console.log("Eureka!");
+             }
+          }
 
         }
 
@@ -379,7 +425,7 @@
 
   
         locations = locationFinder();
-        pinPoster(locations);
+        pinPoster(locations);//Puede trabajar indistintamente con uno o más parámetros y debería ir en el closure
 
        
         window.addEventListener('resize', function(e) {
