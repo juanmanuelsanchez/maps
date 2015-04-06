@@ -287,7 +287,7 @@
                 onSelect: function (suggestion) {
 
                   //console.log(suggestion.value);
-<<<<<<< HEAD
+
                   var newList=[];
                   var newLocation= suggestion.value;
                   newList.push(newLocation);
