@@ -287,11 +287,30 @@
                 onSelect: function (suggestion) {
 
                   //console.log(suggestion.value);
+<<<<<<< HEAD
                   var newList=[];
                   var newLocation= suggestion.value;
                   newList.push(newLocation);
                   clearMarkers();
                   pinPoster(newList);
+                  //clearMarkers();
+                  //locations= newLocation;
+                 //pinPoster(locations);
+                //$('#selection').html('You selected: ' + suggestion.value);
+                //createMapMarker(suggestion.value);
+                
+
+                //showMarkers();
+               
+                //return suggestion.value;
+
+                  var newList=[];
+                  var newLocation=suggestion.value;
+                  newList.push(newLocation);
+                  //console.log(newList);
+                  clearMarkers();
+                  pinPoster(newList);
+
                 },
                 showNoSuggestionNotice: true,
                 noSuggestionNotice: 'Sorry, no matching results'
