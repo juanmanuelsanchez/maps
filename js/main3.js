@@ -250,9 +250,12 @@
       init: function() {
           var showButton= document.getElementById("show");
           var hideButton= document.getElementById("hide");
+          var deleteButton= document.getElementById("delete");
           var markers=[];
+          var markers2=[];
           var map;     
           var locations;
+          var locations2;
           var data;
           var listItems=[];
               listItems= octopus.getCurrentLocation();
@@ -279,9 +282,9 @@
                      var location= suggestions[suggestion].value;
                      listSuggestions.push(location);
                   }
-
-                  //console.log(listSuggestions);
-                  pinPoster(listSuggestions);
+                  clearMarkers();
+                  //clearMarkers2();////
+                  //toggleBounce(listSuggestions);
 
                 },
                 onSelect: function (suggestion) {
@@ -291,26 +294,9 @@
                   var newList=[];
                   var newLocation= suggestion.value;
                   newList.push(newLocation);
-                  clearMarkers();
-                  pinPoster(newList);
-                  //clearMarkers();
-                  //locations= newLocation;
-                 //pinPoster(locations);
-                //$('#selection').html('You selected: ' + suggestion.value);
-                //createMapMarker(suggestion.value);
-                
-
-                //showMarkers();
-               
-                //return suggestion.value;
-
-                  var newList=[];
-                  var newLocation=suggestion.value;
-                  newList.push(newLocation);
-                  //console.log(newList);
-                  clearMarkers();
-                  pinPoster(newList);
-
+                  
+                  toggleBounce2(newList);
+                 
                 },
                 showNoSuggestionNotice: true,
                 noSuggestionNotice: 'Sorry, no matching results'
@@ -332,21 +318,23 @@
 
         function createMapMarker(placeData) {
           data= placeData;
-          console.log(data);
+          //console.log(data);
           var lat = placeData.geometry.location.lat();  
           var lon = placeData.geometry.location.lng();  
           var address = placeData.formatted_address;
           var name= placeData.name;
           var bounds = window.mapBounds;            
+      
 
           var marker = new google.maps.Marker({
 
             map: map,
             position: placeData.geometry.location,
+            animation: google.maps.Animation.DROP,
             title: name+ ", "+address
 
           });
-          
+
           markers.push(marker);
 
           var infoWindow = new google.maps.InfoWindow({
@@ -357,6 +345,48 @@
           google.maps.event.addListener(marker, 'click', function() {
 
             infoWindow.open(map, marker);
+            //marker.setAnimation(null);
+          });
+
+          bounds.extend(new google.maps.LatLng(lat, lon));
+    
+          map.fitBounds(bounds);
+
+          map.setCenter(bounds.getCenter());
+
+        }
+
+
+        function createMapMarker2(placeData) {
+         
+          //console.log(data);
+          var lat = placeData.geometry.location.lat();  
+          var lon = placeData.geometry.location.lng();  
+          var address = placeData.formatted_address;
+          var name= placeData.name;
+          var bounds = window.mapBounds;            
+      
+
+          var marker = new google.maps.Marker({
+
+            map: map,
+            position: placeData.geometry.location,
+            animation: google.maps.Animation.BOUNCE,
+            title: name+ ", "+address
+
+          });
+
+          markers2.push(marker);///
+
+          var infoWindow = new google.maps.InfoWindow({
+
+            content: name+ ", "+address
+          });
+
+          google.maps.event.addListener(marker, 'click', function() {
+
+            infoWindow.open(map, marker);
+            marker.setAnimation(null);
           });
 
           bounds.extend(new google.maps.LatLng(lat, lon));
@@ -395,6 +425,15 @@
           }
         }
 
+        function callback2(results, status) {
+      
+          if (status == google.maps.places.PlacesServiceStatus.OK) {
+
+            createMapMarker2(results[0])
+
+          }
+        }
+
         function pinPoster(locations) {
        
           var service = new google.maps.places.PlacesService(map);
@@ -411,6 +450,25 @@
           }
         }
 
+
+         function pinPoster2(locations2) {
+       
+          var service = new google.maps.places.PlacesService(map);
+    
+          for (place in locations2) {
+
+            var request2 = {
+
+              query: locations2[place]
+            }
+
+            service.textSearch(request2, callback2);
+            
+          }
+
+
+        }
+
         function setAllMap(map) {
           var j=0;
           var length= markers.length;
@@ -421,17 +479,58 @@
 
         }
 
+        function setAllMap2(map) {
+          var j=0;
+          var length= markers2.length;
+          for(j; j<length; j++) {
+
+            markers2[j].setMap(map);
+          }
+
+        }
+
         function clearMarkers() {
 
           setAllMap(null);
+          setAllMap2(null);
         }
+
+        /*function clearMarkers2() {/////
+
+          setAllMap2(null);
+        }*/
 
         function showMarkers() {
 
           setAllMap(map);
 
         }
+        
+        function toggleBounce(list) {
+        var locations=list;
+        
+        pinPoster(locations);
+        
+        }
 
+
+
+        function toggleBounce2(listado) {
+          var ubications=listado;
+
+          pinPoster2(ubications);
+
+          
+        }
+
+        /*function deleteMarkers (){
+
+
+          clearMarkers();
+          clearMarkers2();
+          markers=[];
+          markers2=[];
+        }*/
        
         window.mapBounds = new google.maps.LatLngBounds();
 
@@ -447,6 +546,8 @@
 
         })
 
+      
+
         showButton.addEventListener('click', function() {
     
         
@@ -459,10 +560,19 @@
         hideButton.addEventListener('click', function() {
     
          clearMarkers();
+         clearMarkers2();
     
          }, false);
 
+        /*deleteButton.addEventListener('click', function() {
+    
+        
+       deleteMarkers();
 
+    
+        }, false);*/
+
+        
       }
 
     };
